@@ -17,8 +17,10 @@
 package com.exactpro.cradle.cassandra.dao.messages;
 
 import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
+import com.exactpro.cradle.BookId;
 import com.exactpro.cradle.BookInfo;
 import com.exactpro.cradle.PageId;
+import com.exactpro.cradle.cassandra.CassandraStorageSettings;
 import com.exactpro.cradle.cassandra.dao.BookOperators;
 import com.exactpro.cradle.cassandra.iterators.ConvertingPagedIterator;
 import com.exactpro.cradle.cassandra.retries.SelectQueryExecutor;
@@ -62,7 +64,11 @@ public class MessageBatchesIteratorProvider extends AbstractMessageIteratorProvi
 		return op.getByFilter(cassandraFilter, selectQueryExecutor, getRequestInfo(), readAttrs)
 				.thenApplyAsync(resultSet ->
 				{
-					PageId pageId = new PageId(book.getId(), cassandraFilter.getPage());
+					/*
+						book.getId() is useless in this case,
+						since map was being filled with part value
+					*/
+					PageId pageId = new PageId(new BookId(CassandraStorageSettings.DEFAULT_PART_VALUE), cassandraFilter.getPage());
 					cassandraFilter = createNextFilter(cassandraFilter);
 					return new ConvertingPagedIterator<>(resultSet, selectQueryExecutor, limit, returned,
 							entity -> mapMessageBatchEntity(pageId, entity), messageBatchEntityConverter::getEntity,

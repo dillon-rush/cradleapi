@@ -500,7 +500,7 @@ public class CassandraCradleStorage extends CradleStorage
 		{
 			bookOps = ops.getOperators(bookId);
 			CompletableFuture<MappedAsyncPagingIterable<SessionEntity>> future =
-					bookOps.getSessionsOperator().get(bookId.getName(), readAttrs);
+					bookOps.getSessionsOperator().get(settings.getPartValue(), readAttrs);
 			entities = selectExecutor.executeMappedMultiRowResultQuery(
 					() -> future, bookOps.getSessionEntityConverter()::getEntity, queryInfo).get();
 		}
@@ -571,8 +571,9 @@ public class CassandraCradleStorage extends CradleStorage
 		try
 		{
 			bookOps = ops.getOperators(bookId);
+			// Using part value rather than BookId name
 			CompletableFuture<MappedAsyncPagingIterable<ScopeEntity>> future =
-					bookOps.getScopeOperator().get(bookId.getName(), readAttrs);
+					bookOps.getScopeOperator().get(settings.getPartValue(), readAttrs);
 			entities = selectExecutor.executeMappedMultiRowResultQuery(() -> future,
 					bookOps.getScopeEntityConverter()::getEntity, queryInfo).get();
 		}
@@ -685,7 +686,8 @@ public class CassandraCradleStorage extends CradleStorage
 		Collection<PageInfo> result = new ArrayList<>();
 		try
 		{
-			for (PageEntity pageEntity : ops.getOperators(bookId).getPageOperator().getAll(bookId.getName(), readAttrs))
+			// Using part value rather than BookId name
+			for (PageEntity pageEntity : ops.getOperators(bookId).getPageOperator().getAll(settings.getPartValue(), readAttrs))
 			{
 				if (pageEntity.getRemoved() == null)
 					result.add(pageEntity.toPageInfo());

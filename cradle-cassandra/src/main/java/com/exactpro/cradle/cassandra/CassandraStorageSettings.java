@@ -19,7 +19,6 @@ package com.exactpro.cradle.cassandra;
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.exactpro.cradle.CradleStorage;
 import com.exactpro.cradle.cassandra.connection.NetworkTopologyStrategy;
-import com.exactpro.cradle.cassandra.retries.PageSizeAdjustingPolicy;
 import com.exactpro.cradle.cassandra.retries.SelectExecutionPolicy;
 
 public class CassandraStorageSettings
@@ -37,6 +36,9 @@ public class CassandraStorageSettings
 			TEST_EVENT_PARENT_INDEX = "test_event_parent_index",
 			LABELS_TABLE = "labels",
 			INTERVALS_TABLE = "intervals";
+
+	public static final String DEFAULT_PART_VALUE = "part0";
+
 	public static final long DEFAULT_TIMEOUT = 5000;
 	public static final ConsistencyLevel DEFAULT_CONSISTENCY_LEVEL = ConsistencyLevel.LOCAL_QUORUM;
 	public static final int DEFAULT_KEYSPACE_REPL_FACTOR = 1,
@@ -80,8 +82,10 @@ public class CassandraStorageSettings
 			pageSessionsCacheSize,
 			pageScopesCacheSize;
 
+	private String partValue;
+
 	private SelectExecutionPolicy multiRowResultExecutionPolicy, singleRowResultExecutionPolicy;
-	
+
 	public CassandraStorageSettings()
 	{
 		this(null, DEFAULT_TIMEOUT, DEFAULT_CONSISTENCY_LEVEL, DEFAULT_CONSISTENCY_LEVEL);
@@ -126,6 +130,8 @@ public class CassandraStorageSettings
 		this.pageSessionsCacheSize = DEFAULT_PAGE_SESSION_CACHE_SIZE;
 		this.scopesCacheSize = DEFAULT_SCOPES_CACHE_SIZE;
 		this.pageScopesCacheSize = DEFAULT_PAGE_SCOPES_CACHE_SIZE;
+
+		this.partValue = DEFAULT_PART_VALUE;
 	}
 
 	public CassandraStorageSettings(CassandraStorageSettings settings)
@@ -163,6 +169,8 @@ public class CassandraStorageSettings
 		this.pageSessionsCacheSize = settings.getPageSessionsCacheSize();
 		this.scopesCacheSize = settings.getScopesCacheSize();
 		this.pageScopesCacheSize = settings.getPageScopesCacheSize();
+
+		this.partValue = settings.getPartValue();
 	}
 	
 	
@@ -470,5 +478,13 @@ public class CassandraStorageSettings
 			SelectExecutionPolicy singleRowResultExecutionPolicy)
 	{
 		this.singleRowResultExecutionPolicy = singleRowResultExecutionPolicy;
+	}
+
+	public String getPartValue() {
+		return partValue;
+	}
+
+	public void setPartValue(String partValue) {
+		this.partValue = partValue;
 	}
 }

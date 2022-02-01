@@ -18,9 +18,11 @@ package com.exactpro.cradle.cassandra.dao.messages;
 
 import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.Row;
+import com.exactpro.cradle.BookId;
 import com.exactpro.cradle.BookInfo;
 import com.exactpro.cradle.PageId;
 import com.exactpro.cradle.PageInfo;
+import com.exactpro.cradle.cassandra.CassandraStorageSettings;
 import com.exactpro.cradle.cassandra.dao.BookOperators;
 import com.exactpro.cradle.cassandra.dao.messages.converters.MessageBatchEntityConverter;
 import com.exactpro.cradle.cassandra.resultset.IteratorProvider;
@@ -32,6 +34,7 @@ import com.exactpro.cradle.messages.MessageFilter;
 import com.exactpro.cradle.utils.CradleStorageException;
 import com.exactpro.cradle.utils.TimeUtils;
 
+import java.awt.print.Book;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -146,7 +149,12 @@ abstract public class AbstractMessageIteratorProvider<T> extends IteratorProvide
 
 	protected CassandraStoredMessageFilter createNextFilter(CassandraStoredMessageFilter prevFilter)
 	{
-		PageInfo prevPage = book.getPage(new PageId(book.getId(), prevFilter.getPage()));
+		/*
+			book.getId() is useless in this case,
+			since map was being filled with part value
+		 */
+		BookId bookId = new BookId(CassandraStorageSettings.DEFAULT_PART_VALUE);
+		PageInfo prevPage = book.getPage(new PageId(bookId, prevFilter.getPage()));
 		if (prevPage.equals(lastPage))
 			return null;
 
