@@ -160,6 +160,7 @@ public class CassandraCradleStorage extends CradleStorage
 			CassandraDataMapper dataMapper = new CassandraDataMapperBuilder(session).build();
 			ops = createOperators(dataMapper, settings);
 			Duration timeout = Duration.ofMillis(settings.getTimeout());
+			logger.info("readAttrs/writeAttrs using timeout {}", timeout.toMillis());
 			writeAttrs = builder -> builder.setConsistencyLevel(settings.getWriteConsistencyLevel())
 					.setTimeout(timeout);
 			readAttrs = builder -> builder.setConsistencyLevel(settings.getReadConsistencyLevel())
