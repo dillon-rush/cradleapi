@@ -37,12 +37,14 @@ public class CassandraSemaphore
 	
 	public void acquireSemaphore() throws InterruptedException
 	{
+		logger.debug("Acquiring");
 		semaphore.acquire();
 		logger.debug("Acquired semaphore, {} out of {} acquires remain", semaphore.availablePermits(), maxParallelQueries);
 	}
 	
 	public void releaseSemaphore()
 	{
+		logger.debug("Releasing");
 		semaphore.release();
 		logger.debug("Released semaphore, {} out of {} acquires remain", semaphore.availablePermits(), maxParallelQueries);
 	}
