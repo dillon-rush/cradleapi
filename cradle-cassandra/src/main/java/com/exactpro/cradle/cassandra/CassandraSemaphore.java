@@ -16,10 +16,15 @@
 
 package com.exactpro.cradle.cassandra;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.Semaphore;
 
 public class CassandraSemaphore
 {
+	private static final Logger logger = LoggerFactory.getLogger(CassandraSemaphore.class);
+
 	private final int maxParallelQueries;
 	private final Semaphore semaphore;
 	
@@ -33,11 +38,13 @@ public class CassandraSemaphore
 	public void acquireSemaphore() throws InterruptedException
 	{
 		semaphore.acquire();
+		logger.debug("Acquired semaphore, {} out of {} acquires remain", semaphore.availablePermits(), maxParallelQueries);
 	}
 	
 	public void releaseSemaphore()
 	{
 		semaphore.release();
+		logger.debug("Released semaphore, {} out of {} acquires remain", semaphore.availablePermits(), maxParallelQueries);
 	}
 	
 	
@@ -46,7 +53,7 @@ public class CassandraSemaphore
 		return maxParallelQueries;
 	}
 	
-	public int getAquiredQueriesNumber() throws InterruptedException
+	public int getAcquiredQueriesNumber() throws InterruptedException
 	{
 		return maxParallelQueries-semaphore.availablePermits();
 	}
